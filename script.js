@@ -63,29 +63,38 @@ function buildIcs(evt) {
     "URL:" + evt.url,
     "STATUS:CONFIRMED",
     "BEGIN:VALARM",
-    "TRIGGER:-PT1H",
+    "TRIGGER:-PT12H",
     "ACTION:DISPLAY",
-    "DESCRIPTION:" + icsEscape(evt.title) + " starts in 1 hour",
+    "DESCRIPTION:" + icsEscape(evt.title) + " starts in 12 hours",
     "END:VALARM",
     "END:VEVENT",
     "END:VCALENDAR",
   ].join("\r\n");
 }
 
+// Open the .ics so the OS hands it to the installed calendar app (Apple
+// Calendar / Google Calendar / Outlook). No forced download.
 function openCalendar(evt) {
   const ics = buildIcs(evt);
-  const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
+  const dataUri =
+    "data:text/calendar;charset=utf-8," + encodeURIComponent(ics);
 
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = evt.title.replace(/[^a-z0-9]+/gi, "_") + ".ics";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(function () {
-    URL.revokeObjectURL(url);
-  }, 1500);
+  const ua = navigator.userAgent || "";
+  const isIOS = /iPad|iPhone|iPod/i.test(ua);
+
+  if (isIOS) {
+    // iOS: navigate in the same tab so Safari hands off to Calendar app.
+    window.location.href = dataUri;
+    return;
+  }
+
+  // Android / Desktop: open in a new tab, the OS routes it to the
+  // installed calendar app.
+  const w = window.open(dataUri, "_blank", "noopener,noreferrer");
+  if (!w) {
+    // Pop-up blocked — fall back to same-tab navigation.
+    window.location.href = dataUri;
+  }
 }
 
 document.addEventListener("DOMContentLoaded", function () {
