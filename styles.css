@@ -1,158 +1,254 @@
-@import url('https://fonts.googleapis.com/css2?family=Fredericka+the+Great&family=Playball&family=Poetsen+One&family=Racing+Sans+One&display=swap');
-body {
-    font-family: 'Calibri', sans-serif;
-    background-color: #f5f5f5;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
+
+:root {
+  --gold: #f0c95a;
+  --gold-soft: #f6dca0;
+  --gold-deep: #d4a73f;
+  --teal: #1f5b6e;
+  --magenta: #8a1a4a;
+  --ink: #ffffff;
+  --ink-dim: rgba(255, 255, 255, 0.85);
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* body {
+  min-height: 100vh;
+  font-family: "Cormorant Garamond", "Times New Roman", serif;
+  background: radial-gradient(circle at top, #2a1530 0%, #120a18 60%, #06030a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  color: var(--ink);
+} */
 
 .card {
-    background-color: #1E2D30;
-    max-width: 1080px;
-    text-align: center;
-    color: white;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+  position: relative;
+  width: min(100%, 540px);
+  aspect-ratio: 488 / 1024;
+  background-image: url("documents/background_image.png");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: center;
+  border-radius: 18px;
+  overflow: hidden;
+  container-type: inline-size;
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(240, 201, 90, 0.15);
 }
 
-.card img {
-    width: 100%;
-    height: auto;
+/* Inner content sits inside the arched area of the template. */
+.content {
+  position: absolute;
+  inset: 13% 11% 16% 11%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1.4%;
+  padding-top: 1.5%;
 }
 
-.card h2 {
-    margin: 20px 0 10px;
-    font-size: 24px;
+.title {
+  font-family: "Playfair Display", "Georgia", serif;
+  font-style: italic;
+  font-weight: 600;
+  color: var(--gold);
+  font-size: clamp(22px, 4.8cqi, 36px);
+  letter-spacing: 0.04em;
+  line-height: 1.15;
+  margin: 1% 0 0;
+  text-shadow: 0 2px 10px rgba(240, 201, 90, 0.2);
 }
 
-.card p {
-    margin: 0 20px 20px;
+.solicit {
+  font-family: "Cormorant Garamond", serif;
+  font-style: italic;
+  font-size: clamp(14px, 2.9cqi, 20px);
+  color: var(--ink-dim);
+  line-height: 1.4;
+  margin: 0 0 5% 0;
+  max-width: 92%;
 }
 
-.card button {
-    font-weight: 600;
-    background-color: #b49b4c;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    margin: 10px 0;
-    border-radius: 5px;
-    cursor: pointer;
+.couple {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4em;
+  margin: 1% 0;
+  width: 100%;
 }
 
-.card button:hover {
-    background-color: #998b40;
+.ganesha {
+  width: clamp(72px, 14cqi, 110px);
+  height: auto;
 }
 
-.details {
-    width: 100%;
-    background-color: white;
-    color: #333;
-    padding: 30px;
-    text-align: left;
+.name {
+  font-family: "Great Vibes", "Allura", cursive;
+  color: var(--gold);
+  font-size: clamp(38px, 9cqi, 68px);
+  line-height: 1;
+  margin: 0;
+  text-shadow: 0 2px 12px rgba(240, 201, 90, 0.25);
 }
 
-.details h3 {
-    margin: 10px 0;
+.relation {
+  font-family: "Cormorant Garamond", serif;
+  font-style: italic;
+  font-size: clamp(12px, 2.45cqi, 17px);
+  color: var(--ink-dim);
+  margin-top: 6px;
+  max-width: 95%;
+  line-height: 1.3;
 }
 
-.details .action-buttons {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 20px;
+.weds {
+  font-family: "Great Vibes", cursive;
+  color: var(--gold-soft);
+  font-size: clamp(28px, 6cqi, 46px);
+  line-height: 1;
+  margin: 2% 0;
 }
 
-.details button {
-    background-color: #b49b4c;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
+.venue {
+  font-family: "Cormorant Garamond", serif;
+  font-size: clamp(14px, 2.8cqi, 20px);
+  color: var(--ink);
+  line-height: 1.45;
+  margin: 1.5% 0 0;
+  max-width: 94%;
 }
 
-.details button:hover {
-    background-color: #998b40;
+.venue strong {
+  color: var(--gold);
+  font-weight: 600;
+  letter-spacing: 0.04em;
 }
 
-.sub_details {
-    display: flex;
-    gap: 10px;
+.events {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin-top: 7%;
 }
 
-/* Additional styles for specific elements */
-
-.marriage-title {
-    color: #ff0077;
-    margin-bottom: 10px;
-    margin-top: 20px;
-    font-size: 16px;
-    font-family: "Poetsen One", cursive;
+.event {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  gap: 4px;
 }
 
-.invitation-text {
-    margin-left: 0px;
-    margin-right: 0px;
-    margin-bottom: 20px;
-    margin-top: 20px;
-    font-family: "Playball", cursive;
+.event-header {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  margin: 0;
+  line-height: 1.2;
 }
 
-.name-title {
-    color: #40A5F5;
-    font-size: 50px;
-    font-family: "Racing Sans One", cursive;
+.event-date {
+  font-family: "Cinzel", "Georgia", serif;
+  font-weight: 500;
+  font-size: clamp(12px, 2.45cqi, 17px);
+  letter-spacing: 0.08em;
+  color: var(--ink);
 }
 
-.location-button {
-    border-radius: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
+.event-sep {
+  color: var(--gold);
+  font-weight: 300;
+  font-size: clamp(14px, 2.8cqi, 20px);
 }
 
-.detail-section {
-    margin-right: 8px;
+.event-label {
+  font-family: "Playfair Display", "Georgia", serif;
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(14px, 2.85cqi, 20px);
+  color: var(--gold);
+  letter-spacing: 0.02em;
 }
 
-.detail-label {
-    margin: 0;
-    padding: 0;
+.event-time {
+  font-family: "Cinzel", "Georgia", serif;
+  font-weight: 500;
+  font-size: clamp(12px, 2.45cqi, 17px);
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  margin: 0;
 }
 
-.detail-value {
-    font-weight: 600;
-    margin: 0;
-    padding: 0;
-    margin-top: 15px;
+.event-place {
+  font-family: "Playfair Display", "Georgia", serif;
+  font-style: italic;
+  font-weight: 600;
+  color: var(--gold);
+  font-size: clamp(16px, 3.2cqi, 24px);
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+  margin: 4% 0 0;
+  text-align: center;
 }
 
-.divider {
-    border: none;
-    border-top: 1px solid #ccc;
-    margin-bottom: 15px;
-    margin-top: 15px;
+.event-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45%;
+  margin: 3% 0;
+  gap: 10px;
 }
 
-.parents-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    width: 100%;
+.event-divider::before,
+.event-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(240, 201, 90, 0.65), transparent);
 }
 
-.parent-section {
-    flex: 1;
+.event-divider span {
+  color: var(--gold);
+  font-size: clamp(10px, 2cqi, 14px);
+  line-height: 1;
 }
 
-.clickable {
-    cursor: pointer;
-} 
+.compliments {
+  margin-top: 7%;
+  font-family: "Cormorant Garamond", serif;
+  font-style: italic;
+  font-size: clamp(12px, 2.35cqi, 17px);
+  color: var(--ink-dim);
+  letter-spacing: 0.03em;
+}
+
+.compliments strong {
+  color: var(--gold-soft);
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+@media (max-width: 380px) {
+  body {
+    padding: 0.75rem;
+  }
+}
