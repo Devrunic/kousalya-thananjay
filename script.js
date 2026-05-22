@@ -72,71 +72,46 @@ function buildIcs(evt) {
   ].join("\r\n");
 }
 
-// Route the .ics (with its VALARM 12-hour reminder) to the user's
-// installed calendar app:
-//
-//   1. Web Share API with a file (preferred when available) -- opens
-//      the native share sheet on Android/iOS so the user picks Google
-//      Calendar / Apple Calendar / Outlook, which receives the .ics
-//      content directly. No file is saved to the device, and the
-//      VALARM (12-hour reminder) is preserved.
-//
-//   2. iOS Safari fallback -- navigate to the .ics data URI, which
-//      iOS hands off to Apple Calendar directly.
-//
-//   3. Final fallback -- trigger an .ics download. Tapping the
-//      downloaded file opens it in the calendar app with the reminder
-//      intact.
-async function openCalendar(evt) {
-  const ics = buildIcs(evt);
-  const filename =
-    evt.title.replace(/[^a-z0-9]+/gi, "_") + ".ics";
-  const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+// Google Calendar template URL — opens directly in the installed Google
+// Calendar app on Android (via App Links) or Google Calendar web on
+// desktop. No download is triggered.
+function buildGoogleCalendarUrl(evt) {
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: evt.title,
+    dates: evt.start + "/" + evt.end,
+    details: evt.description + "\n\n(Reminder set: 12 hours before)",
+    location: evt.location,
+  });
+  return (
+    "https://calendar.google.com/calendar/render?" + params.toString()
+  );
+}
 
-  // 1. Web Share API with a file (Android Chrome 89+, iOS Safari 15+,
-  //    desktop Chrome 89+).
-  try {
-    if (typeof File !== "undefined" && navigator.canShare) {
-      const file = new File([blob], filename, {
-        type: "text/calendar",
-      });
-      if (navigator.canShare({ files: [file] })) {
-        await navigator.share({
-          files: [file],
-          title: evt.title,
-          text: "Add to your calendar",
-        });
-        return;
-      }
-    }
-  } catch (err) {
-    if (err && err.name === "AbortError") return; // user cancelled
-  }
-
-  // 2. iOS Safari (older) -- navigate to the .ics data URI.
+// Route to the device's native calendar handler:
+//   - iOS  -> .ics data URI (opens Apple Calendar directly with VALARM).
+//   - Android / Desktop -> Google Calendar template URL (opens Google
+//     Calendar app via Android App Links, or web on desktop). Does not
+//     trigger a file download.
+function openCalendar(evt) {
   const ua = navigator.userAgent || "";
   const isIOS =
     /iPad|iPhone|iPod/i.test(ua) ||
     (ua.includes("Mac") && navigator.maxTouchPoints > 1);
 
   if (isIOS) {
-    window.location.href =
+    const ics = buildIcs(evt);
+    const dataUri =
       "data:text/calendar;charset=utf-8," + encodeURIComponent(ics);
+    window.location.href = dataUri;
     return;
   }
 
-  // 3. Last resort -- download the .ics. The 12-hour reminder is in
-  //    the file; the user taps it to add to their calendar.
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(function () {
-    URL.revokeObjectURL(url);
-  }, 5000);
+  const gcalUrl = buildGoogleCalendarUrl(evt);
+  const w = window.open(gcalUrl, "_blank", "noopener,noreferrer");
+  if (!w) {
+    window.location.href = gcalUrl;
+  }
 }
 
 document.addEventListener("DOMContentLoaded", function () {
