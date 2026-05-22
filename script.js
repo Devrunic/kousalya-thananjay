@@ -72,29 +72,71 @@ function buildIcs(evt) {
   ].join("\r\n");
 }
 
-// Open the .ics so the OS hands it to the installed calendar app (Apple
-// Calendar / Google Calendar / Outlook). No forced download.
-function openCalendar(evt) {
+// Route the .ics (with its VALARM 12-hour reminder) to the user's
+// installed calendar app:
+//
+//   1. Web Share API with a file (preferred when available) -- opens
+//      the native share sheet on Android/iOS so the user picks Google
+//      Calendar / Apple Calendar / Outlook, which receives the .ics
+//      content directly. No file is saved to the device, and the
+//      VALARM (12-hour reminder) is preserved.
+//
+//   2. iOS Safari fallback -- navigate to the .ics data URI, which
+//      iOS hands off to Apple Calendar directly.
+//
+//   3. Final fallback -- trigger an .ics download. Tapping the
+//      downloaded file opens it in the calendar app with the reminder
+//      intact.
+async function openCalendar(evt) {
   const ics = buildIcs(evt);
-  const dataUri =
-    "data:text/calendar;charset=utf-8," + encodeURIComponent(ics);
+  const filename =
+    evt.title.replace(/[^a-z0-9]+/gi, "_") + ".ics";
+  const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
 
+  // 1. Web Share API with a file (Android Chrome 89+, iOS Safari 15+,
+  //    desktop Chrome 89+).
+  try {
+    if (typeof File !== "undefined" && navigator.canShare) {
+      const file = new File([blob], filename, {
+        type: "text/calendar",
+      });
+      if (navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: evt.title,
+          text: "Add to your calendar",
+        });
+        return;
+      }
+    }
+  } catch (err) {
+    if (err && err.name === "AbortError") return; // user cancelled
+  }
+
+  // 2. iOS Safari (older) -- navigate to the .ics data URI.
   const ua = navigator.userAgent || "";
-  const isIOS = /iPad|iPhone|iPod/i.test(ua);
+  const isIOS =
+    /iPad|iPhone|iPod/i.test(ua) ||
+    (ua.includes("Mac") && navigator.maxTouchPoints > 1);
 
   if (isIOS) {
-    // iOS: navigate in the same tab so Safari hands off to Calendar app.
-    window.location.href = dataUri;
+    window.location.href =
+      "data:text/calendar;charset=utf-8," + encodeURIComponent(ics);
     return;
   }
 
-  // Android / Desktop: open in a new tab, the OS routes it to the
-  // installed calendar app.
-  const w = window.open(dataUri, "_blank", "noopener,noreferrer");
-  if (!w) {
-    // Pop-up blocked — fall back to same-tab navigation.
-    window.location.href = dataUri;
-  }
+  // 3. Last resort -- download the .ics. The 12-hour reminder is in
+  //    the file; the user taps it to add to their calendar.
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function () {
+    URL.revokeObjectURL(url);
+  }, 5000);
 }
 
 document.addEventListener("DOMContentLoaded", function () {
