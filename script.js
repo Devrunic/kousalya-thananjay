@@ -1,6 +1,6 @@
 // Wedding events. Times below are in UTC (IST = UTC + 5:30).
 // Reception: 23-06-2026, 6:00 PM IST -> 10:00 PM IST  (4 hours)
-// Muhurtham: 24-06-2026, 6:00 AM IST -> 7:30 AM IST
+// Muhurtham: 24-06-2026, 9:15 AM IST -> 10:45 AM IST
 const VENUE = "Mangala Kalyana Mandapa, Koramangala, Bangaluru - 560095";
 const MAP_URL = "https://maps.app.goo.gl/oRni7gdmUDAxoGq3A";
 
@@ -21,8 +21,8 @@ const events = {
       "Wedding muhurtham of Kousalya & Thananjay Sriram. Venue: " +
       VENUE + ". Map: " + MAP_URL,
     location: VENUE,
-    start: "20260624T003000Z",
-    end: "20260624T020000Z",
+    start: "20260624T034500Z",
+    end: "20260624T051500Z",
     url: MAP_URL,
   },
 };
