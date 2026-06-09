@@ -140,3 +140,72 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
+
+// YouTube video: muted autoplay when scrolled into view, pause when out.
+// Muting is required for browsers to allow programmatic autoplay.
+(function () {
+  const VIDEO_ID = "G2URUQfAo1g";
+  const mount = document.getElementById("weddingVideo");
+  if (!mount) return;
+
+  // The stable wrapper is observed instead of #weddingVideo, because the
+  // YouTube API replaces that div with an <iframe>, detaching the original
+  // node from the DOM (a detached node never intersects the viewport).
+  const frame = mount.closest(".video-frame") || mount.parentElement;
+  let player = null;
+
+  function setupObserver() {
+    const observer = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (!player || typeof player.playVideo !== "function") return;
+          if (entry.isIntersecting) {
+            player.playVideo();
+          } else {
+            player.pauseVideo();
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+    observer.observe(frame);
+  }
+
+  // YouTube's IFrame API rejects requests from a "null" origin, which is
+  // what the file:// protocol produces. In that case playback fails with a
+  // configuration error (e.g. 150 / 153). Surface a clear hint instead.
+  if (window.location.protocol === "file:") {
+    mount.innerHTML =
+      '<p style="color:#f6dca0;font-family:serif;text-align:center;' +
+      'padding:1rem;line-height:1.4">This video needs the page to be ' +
+      "served over http(s).<br>Run a local server (e.g. " +
+      "<code>npx serve</code> or VS Code Live Server) and reopen.</p>";
+    return;
+  }
+
+  function onPlayerError(e) {
+    console.error("YouTube player error:", e && e.data);
+  }
+
+  window.onYouTubeIframeAPIReady = function () {
+    player = new YT.Player("weddingVideo", {
+      videoId: VIDEO_ID,
+      playerVars: {
+        mute: 1,
+        playsinline: 1,
+        rel: 0,
+        modestbranding: 1,
+        enablejsapi: 1,
+        origin: window.location.origin,
+      },
+      events: {
+        onReady: setupObserver,
+        onError: onPlayerError,
+      },
+    });
+  };
+
+  const tag = document.createElement("script");
+  tag.src = "https://www.youtube.com/iframe_api";
+  document.head.appendChild(tag);
+})();

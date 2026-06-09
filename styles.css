@@ -299,6 +299,30 @@ body {
   letter-spacing: 0.08em;
 }
 
+.video-section {
+  width: min(100%, 540px);
+  margin: 1.5rem 0 2rem;
+}
+
+.video-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(240, 201, 90, 0.15);
+}
+
+.video-frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
 @media (max-width: 380px) {
   body {
     padding: 0.75rem;
