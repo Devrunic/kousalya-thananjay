@@ -295,9 +295,8 @@ body {
 }
 
 .video-panel {
-  width: 100%;
-  max-width: 580px;
-  margin: 0 auto;
+  width: min(100%, 540px);
+  margin: 0;
   padding: 1.25rem 1.25rem 2rem;
   background:
     radial-gradient(circle at 12% 8%, rgba(255, 255, 255, 0.14) 0%, transparent 28%),
@@ -383,7 +382,7 @@ body {
 
 @media (max-width: 380px) {
   .video-panel {
-    padding: 1rem 0.9rem 1.5rem;
+    padding: 0 0 1.5rem;
   }
 
   .video-panel__body {
